@@ -57,21 +57,43 @@ Modifica la funzione in creaLanciaDado(), che restituisce una closure che memori
 Se il numero esce due volte di fila, stampa "Incredibile!".
 */
 
-function lanciaDado() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const probabilita = Math.random();
+function creaLanciaDado() {
+  let ultimoLancio = 0;
 
-      if (probabilita > 0.2) {
-        const numero = Math.floor(Math.random() * 6) + 1;
-        resolve(numero);
-      } else {
-        reject("Il dado si è incastrato!");
-      }
-    }, 3000);
-  });
+  function lanciaDado() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const probabilita = Math.random();
+
+        if (probabilita > 0.2) {
+          const numero = Math.floor(Math.random() * 6) + 1;
+
+          if (numero === ultimoLancio) {
+            console.log("Incredibile!");
+          }
+
+          ultimoLancio = numero;
+
+          resolve(numero);
+        } else {
+          reject("Il dado si è incastrato!");
+        }
+      }, 3000);
+    });
+  }
+
+  return lanciaDado;
 }
 
+const lanciaDado = creaLanciaDado();
+
 lanciaDado()
-  .then((risultato) => console.log(`Il risultato è:`, risultato))
+  .then((risultato) => {
+    console.log(`Il risultato è: ${risultato}`);
+    return lanciaDado();
+  })
+  .then((risultato) => {
+    console.log(`Il secondo risultato è: ${risultato}`);
+    return lanciaDado();
+  })
   .catch((err) => console.error(err));
